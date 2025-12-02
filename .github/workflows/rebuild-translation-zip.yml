@@ -1,0 +1,31 @@
+name: Rebuild translations.zip
+
+on:
+  push:
+    paths:
+      - "country_translations.json"
+      - "region_translations.json"
+      - "city_translations.json"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Recreate ZIP
+        run: |
+          rm -f translations.zip
+          zip translations.zip country_translations.json region_translations.json city_translations.json
+
+      - name: Commit and push ZIP
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add translations.zip
+          git commit -m "Auto-update translations.zip"
+          git push
